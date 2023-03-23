@@ -15,3 +15,4 @@ class Api_handler:
         d = {}
         d["available_methods"] = method_list
         return json.dumps(d)
+
