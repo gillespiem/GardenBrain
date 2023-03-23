@@ -32,3 +32,4 @@ class Wifi:
 
     def get_ifconfig(self):
         return self.ap.ifconfig()
+

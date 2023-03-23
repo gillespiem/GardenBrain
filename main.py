@@ -11,4 +11,3 @@ if __name__ == "__main__":
     wifi = Wifi()
     api = Api_handler_gardenbrain()
     webserver = BotwebServer(api)
-    

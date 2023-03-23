@@ -19,8 +19,8 @@ class BotwebServer:
         json_response = json.dumps(r)
 
         #json_response = self.api_handler.get_api_methods()
+        #json_response={"response" : http_response["data"]}
         json_response={"response" : http_response["data"]}
-
 
         response = "HTTP/1.1 200 OK\r\nServer:botbrain-0.1\r\nContent-Type: application/json\r\n\r\n%s" % json_response
         
@@ -72,7 +72,11 @@ class BotwebServer:
             http_data = False
             if http_verb == b"GET":
                 print("THIS is a GET request")
-                http_data = request_lines[-1]
+                #http_data = request_lines[-1]
+                #For GET requests, we reform the URI to json
+                http_action = { "action" : http_uri[1:] }
+                http_data = json.dumps(http_action)
+                print(http_data)
                 return self.parse_api_action(http_data)
             elif http_verb == b"POST":
                 print("THIS is a POST request for %s " % http_uri)
@@ -98,8 +102,9 @@ class BotwebServer:
             print("Now listening.,..")
             conn, addr = s.accept()
             print("Connection from %s " % str(addr))
-            request = conn.recv(1024)
+            request = conn.recv(2048)
             print("Content = %s" % str(request))
+            
             http_response = self.parse_request(request)
             
             if http_response["code"] == 200:
@@ -109,5 +114,7 @@ class BotwebServer:
 
             conn.send(response)
             conn.close()
+
+
 
 

@@ -24,7 +24,3 @@ class Api_handler_botbrain(Api_handler):
 
     def action_flashled(self):
         print("Now flashing led for 5 seconds")
-
-
-#it = Api_handler_botbrain()
-#it.action_lpm0()
