@@ -118,13 +118,13 @@ class Api_handler_gardenbrain(Api_handler):
             result = "Temperature: {}°F   Humidity: {:.0f}% ".format(temp, hum)
             
             p_result = {}
-            p_result["channel"] = f"GPIO12-{botbrain_config.PINS['GPIO12']['name']}-Temp"
+            p_result["channel"] = f"GPIO2-{botbrain_config.PINS['GPIO2']['name']}-Temp"
             p_result["value"] = temp
             p_result["float"] = 1
             prtg_results["prtg"]["result"].append(p_result)
             
             p_result = {}
-            p_result["channel"] = f"GPIO12-{botbrain_config.PINS['GPIO12']['name']}-Humidity"
+            p_result["channel"] = f"GPIO2-{botbrain_config.PINS['GPIO2']['name']}-Humidity"
             p_result["value"] = hum
             p_result["float"] = 1
             prtg_results["prtg"]["result"].append(p_result)
