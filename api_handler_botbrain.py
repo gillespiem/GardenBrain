@@ -1,26 +1,19 @@
-from api_handler import Api_handler
 import json
 
-class Api_handler_botbrain(Api_handler):
-    def __init__(self):
-        self.set_name("botbrain")
-        print ("Now initiating %s" % self.get_name())
-        print(self.get_api_methods())
+class Api_handler:
+    def __init__(self, name):
+        self.set_name(name)
+    
+    def set_name(self, name):
+        self.name = name
 
-    def action_lpm0(self):
-        print("Going to LPM0")
+    def get_name(self):
+        return "%s API " % self.name
+    
+    def get_api_methods(self):
+        method_list = [method for method in dir(self) if method.startswith('__') is False]
+        d = {}
+        d["available_methods"] = method_list
+        return json.dumps(d)
 
-    def action_lpm1(self):
-        print("Going to LPM1")
 
-    def action_lpm2(self):
-        print("Going to LPM2")
-
-    def action_lpm3(self):
-        print("Going to LPM3")
-
-    def action_reboot(self):
-        print("Rebooting")
-
-    def action_flashled(self):
-        print("Now flashing led for 5 seconds")
