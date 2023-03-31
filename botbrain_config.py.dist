@@ -1,0 +1,137 @@
+HOST="0.0.0.0"
+PORT=8080
+WIFI_MODE="sta"
+WIFI_SSID=<<OMITTTED>>
+WIFI_PASSWORD=<<OMMITTED>>
+
+
+WATERRESULTS_LIST= ["Water is detected.", "Water is NOT detected."]
+LEDRESULTS_LIST = ["Light is on", "Light is off"]
+
+PINS={}
+PINS["GPIO01"]={}
+PINS["GPIO01"]["name"]="Left Box #1A"
+PINS["GPIO01"]["channel"] = 1
+PINS['GPIO01']['type'] = 'digital'
+PINS['GPIO01']['class'] = 'soil moisture'
+PINS['GPIO01']['human_readable'] = WATERRESULTS_LIST
+
+
+PINS["GPIO02"]={}
+PINS["GPIO02"]["name"]="Temp/Humidity"
+PINS["GPIO02"]["channel"] = 2
+PINS['GPIO02']['type'] = 'analog'
+PINS['GPIO02']['class'] = 'temp/humidity'
+PINS['GPIO02']['human_readable'] = []
+
+PINS["GPIO03"]={}
+PINS["GPIO03"]["name"]="Left Box #1B"
+PINS["GPIO03"]["channel"] = 3
+PINS['GPIO03']['type'] = 'digital'
+PINS['GPIO03']['class'] = 'soil moisture'
+PINS['GPIO03']['human_readable'] = WATERRESULTS_LIST
+
+PINS['GPIO04']={}
+PINS['GPIO04']['name']='Left Tomato #1'
+PINS['GPIO04']['channel'] = 4
+PINS['GPIO04']['type'] = 'digital'
+PINS['GPIO04']['class'] = 'soil moisture'
+PINS['GPIO04']['human_readable'] = WATERRESULTS_LIST
+
+PINS['GPIO05']={}
+PINS['GPIO05']['name']='Left Tomato #2'
+PINS['GPIO05']['channel'] = 5
+PINS['GPIO05']['type'] = 'digital'
+PINS['GPIO05']['class'] = 'soil moisture'
+PINS['GPIO05']['human_readable'] = WATERRESULTS_LIST
+
+PINS['GPIO06']={}
+PINS['GPIO06']['name']='Left Longbox #1'
+PINS['GPIO06']['channel'] = 6
+PINS['GPIO06']['type'] = 'digital'
+PINS['GPIO06']['class'] = 'soil moisture'
+PINS['GPIO06']['human_readable'] = WATERRESULTS_LIST
+
+PINS['GPIO07']={}
+PINS['GPIO07']['name']='Right Box #1A'
+PINS['GPIO07']['channel'] = 7
+PINS['GPIO07']['type'] = 'digital'
+PINS['GPIO07']['class'] = 'soil moisture'
+PINS['GPIO07']['human_readable'] = WATERRESULTS_LIST
+
+PINS['GPIO08']={}
+PINS['GPIO08']['name']='Right Box #1B'
+PINS['GPIO08']['channel'] = 8
+PINS['GPIO08']['type'] = 'digital'
+PINS['GPIO08']['class'] = 'soil moisture'
+PINS['GPIO08']['human_readable'] = WATERRESULTS_LIST
+
+PINS['GPIO09']={}
+PINS['GPIO09']['name']='Right Tomato #1'
+PINS['GPIO09']['channel'] = 9
+PINS['GPIO09']['type'] = 'digital'
+PINS['GPIO09']['class'] = 'soil moisture'
+PINS['GPIO09']['human_readable'] = WATERRESULTS_LIST
+
+PINS['GPIO10']={}
+PINS['GPIO10']['name']='Right Tomato #2'
+PINS['GPIO10']['channel'] = 10
+PINS['GPIO10']['type'] = 'digital'
+PINS['GPIO10']['class'] = 'soil moisture'
+PINS['GPIO10']['human_readable'] = WATERRESULTS_LIST
+
+PINS['GPIO11']={}
+PINS['GPIO11']['name']='Right Longbox #1'
+PINS['GPIO11']['channel'] = 11
+PINS['GPIO11']['type'] = 'digital'
+PINS['GPIO11']['class'] = 'soil moisture'
+PINS['GPIO11']['human_readable'] = WATERRESULTS_LIST
+
+PINS['GPIO12']={}
+PINS['GPIO12']['name']='Light Sensor'
+PINS['GPIO12']['channel'] = 12
+PINS['GPIO12']['type'] = 'digital'
+PINS['GPIO12']['class'] = 'light sensor'
+PINS['GPIO12']['human_readable'] = LEDRESULTS_LIST
+
+PINS['GPIO13']={}
+PINS['GPIO13']['name']='Left Eye R'
+PINS['GPIO13']['channel'] = 13
+PINS['GPIO13']['type'] = 'digital'
+PINS['GPIO13']['class'] = 'led'
+PINS['GPIO13']['human_readable'] = LEDRESULTS_LIST
+
+PINS['GPIO14']={}
+PINS['GPIO14']['name']='Left Eye G'
+PINS['GPIO14']['channel'] = 14
+PINS['GPIO14']['type'] = 'digital'
+PINS['GPIO14']['class'] = 'led'
+PINS['GPIO14']['human_readable'] = LEDRESULTS_LIST
+
+PINS['GPIO15']={}
+PINS['GPIO15']['name']='Left Eye B'
+PINS['GPIO15']['channel'] = 15
+PINS['GPIO15']['type'] = 'digital'
+PINS['GPIO15']['class'] = 'led'
+PINS['GPIO15']['human_readable'] = LEDRESULTS_LIST
+
+PINS['GPIO16']={}
+PINS['GPIO16']['name']='Right Eye R'
+PINS['GPIO16']['channel'] = 16
+PINS['GPIO16']['type'] = 'digital'
+PINS['GPIO16']['class'] = 'led'
+PINS['GPIO16']['human_readable'] = LEDRESULTS_LIST
+
+PINS['GPIO17']={}
+PINS['GPIO17']['name']='Right Eye G'
+PINS['GPIO17']['channel'] = 17
+PINS['GPIO17']['type'] = 'digital'
+PINS['GPIO17']['class'] = 'led'
+PINS['GPIO17']['human_readable'] = LEDRESULTS_LIST
+
+PINS['GPIO18']={}
+PINS['GPIO18']['name']='Right Eye B'
+PINS['GPIO18']['channel'] = 15
+PINS['GPIO18']['type'] = 'digital'
+PINS['GPIO18']['class'] = 'led'
+PINS['GPIO18']['human_readable'] = LEDRESULTS_LIST
