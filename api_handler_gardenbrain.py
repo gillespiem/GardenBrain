@@ -90,7 +90,7 @@ class Api_handler_gardenbrain(Api_handler):
 
 
     def action_checklight(self):
-        channel = 14
+        channel = 11
         water_sense = Pin(channel, Pin.IN)
         print(water_sense.value())
         if (water_sense.value()):
@@ -103,7 +103,7 @@ class Api_handler_gardenbrain(Api_handler):
             return result
 
     def action_checktemp_humidity(self):
-        pin = 2
+        pin = 12
         
         prtg_results = {}
         prtg_results["prtg"] = {}
@@ -118,13 +118,13 @@ class Api_handler_gardenbrain(Api_handler):
             result = "Temperature: {}°F   Humidity: {:.0f}% ".format(temp, hum)
             
             p_result = {}
-            p_result["channel"] = f"GPIO2-{botbrain_config.PINS['GPIO2']['name']}-Temp"
+            p_result["channel"] = f"GPIO12-{botbrain_config.PINS['GPIO12']['name']}-Temp"
             p_result["value"] = temp
             p_result["float"] = 1
             prtg_results["prtg"]["result"].append(p_result)
             
             p_result = {}
-            p_result["channel"] = f"GPIO2-{botbrain_config.PINS['GPIO2']['name']}-Humidity"
+            p_result["channel"] = f"GPIO12-{botbrain_config.PINS['GPIO12']['name']}-Humidity"
             p_result["value"] = hum
             p_result["float"] = 1
             prtg_results["prtg"]["result"].append(p_result)
@@ -146,6 +146,5 @@ class Api_handler_gardenbrain(Api_handler):
     def dynamic_call(self, action):
         if hasattr(self, action) and callable(func := getattr(self,action)):
             return func()
-
-
-
+        else:
+            return False
