@@ -9,6 +9,7 @@ class Wifi:
 
     def __init__(self):
         
+        print("Now initializing the Wifi subsystem...")
         led_smokesignal.blink(0.05,50)
 
         if botbrain_config.WIFI_MODE == "ap":

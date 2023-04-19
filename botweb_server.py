@@ -23,8 +23,8 @@ class BotwebServer:
         #json_response={"response" : http_response["data"]}
         json_response=json.dumps(http_response["data"])
 
-        #response = "HTTP/1.1 200 OK\r\nServer:botbrain-0.1\r\nContent-Type: application/json\r\n\r\n%s" % json_response
-        response = "HTTP/1.1 200 OK\r\nServer:botbrain-0.1\r\nContent-Type: application/json\r\n%s" % json_response
+        response = "HTTP/1.1 200 OK\r\nServer:botbrain-0.1\r\nContent-Type: application/json\r\n\r\n%s" % json_response
+        #response = "HTTP/1.1 200 OK\r\nServer:botbrain-0.1\r\nContent-Type: application/json\r\n%s" % json_response
         
         print(response)
         return bytes(response, 'utf-8')
@@ -116,4 +116,3 @@ class BotwebServer:
 
             conn.send(response)
             conn.close()
-
