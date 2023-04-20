@@ -79,6 +79,7 @@ class BotwebServer:
                 #For GET requests, we reform the URI to json
                 http_action = { "action" : http_uri[1:] }
                 http_data = json.dumps(http_action)
+            
                 self.glog.message(http_data)
                 return self.parse_api_action(http_data)
             elif http_verb == b"POST":

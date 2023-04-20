@@ -146,6 +146,10 @@ class Api_handler_gardenbrain(Api_handler):
     def action_simulated_crash(self):
         raise Exception("Simulated crash")
 
+    def action_pull_logs(self):
+       #return "SIMULATED DEFONLY"
+       return self.glog.display()
+
     def dynamic_call(self, action):
         if hasattr(self, action) and callable(func := getattr(self,action)):
             return func()

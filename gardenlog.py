@@ -15,3 +15,9 @@ class GardenLog:
     
     def close(self):
         self.log.close()
+        
+    def display(self):
+        #This function has a challenge in that it will exhaust memory. Maybe we return only the last 25 lines or so...
+        debuglog = open("debug.log", "r")
+        debuglog.close()
+        return "DEMO DATA ONLY"
