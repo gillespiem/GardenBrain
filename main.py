@@ -17,6 +17,7 @@ def watchdog_thread():
     while True:
         pet_count += 1
         #Every 30 minutes enter a log entry 360 is the normal value
+        # For now, this is actually every 15 seconds
         if pet_count > 3:
             glog.message("Now petting the dog")
             pet_count = 0
@@ -30,13 +31,10 @@ def main_thread():
         api = Api_handler_gardenbrain(glog)
         webserver = BotwebServer(glog, api)
     except Exception as e:
-        print("Exception thrown")
+        print("Exception thrown resetting")
         print(e.message)
-    #    webserver = BotwebServer(api)
-    #except Exception as e:
-    #    print("Exception thrown")
-    #    print(e.message)
-    #    machine.reset()
+        machine.reset()
+
 
 if __name__ == "__main__":
     
@@ -46,10 +44,4 @@ if __name__ == "__main__":
     wifi = Wifi(glog)
     second_thread = _thread.start_new_thread(watchdog_thread, ())
  
-
-#    while True:
-#        print("OK")
-#        time.sleep(1)
-
     main_thread()
-    #thread_two()

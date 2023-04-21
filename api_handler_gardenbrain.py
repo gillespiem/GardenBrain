@@ -6,6 +6,7 @@ import dht
 import botbrain_config
 
 import time
+import ntptime
 
 class Api_handler_gardenbrain(Api_handler):
 
@@ -147,8 +148,10 @@ class Api_handler_gardenbrain(Api_handler):
         raise Exception("Simulated crash")
 
     def action_pull_logs(self):
-       #return "SIMULATED DEFONLY"
        return self.glog.display()
+
+    def action_get_time(self):
+        print(time.localtime())
 
     def dynamic_call(self, action):
         if hasattr(self, action) and callable(func := getattr(self,action)):

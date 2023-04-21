@@ -4,7 +4,6 @@ import botbrain_config
 import time
 from led_smokesignal import LEDSmokeSignal
 
-
 class Wifi:
 
     def __init__(self, glog):
@@ -82,4 +81,3 @@ class Wifi:
 
     def get_status(self):
         return self.ap.isconnected()
-        #return self.ap

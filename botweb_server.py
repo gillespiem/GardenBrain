@@ -19,14 +19,9 @@ class BotwebServer:
         r["message"] = "This is botbrain"
         json_response = json.dumps(r)
 
-        #json_response = self.api_handler.get_api_methods()
-        #json_response={"response" : http_response["data"]}
-        #json_response={"response" : http_response["data"]}
         json_response=json.dumps(http_response["data"])
-
         response = "HTTP/1.1 200 OK\r\nServer:botbrain-0.1\r\nContent-Type: application/json\r\n\r\n%s" % json_response
-        #response = "HTTP/1.1 200 OK\r\nServer:botbrain-0.1\r\nContent-Type: application/json\r\n%s" % json_response
-        
+          
         self.glog.message(response)
         return bytes(response, 'utf-8')
 
@@ -75,7 +70,7 @@ class BotwebServer:
             http_data = False
             if http_verb == b"GET":
                 self.glog.message("THIS is a GET request")
-                #http_data = request_lines[-1]
+
                 #For GET requests, we reform the URI to json
                 http_action = { "action" : http_uri[1:] }
                 http_data = json.dumps(http_action)
