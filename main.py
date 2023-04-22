@@ -3,24 +3,45 @@ from api_handler_gardenbrain import Api_handler_gardenbrain
 from wifi import Wifi
 from machine import Pin
 import time
-import led_smokesignal
 import _thread
+from gardenlog import GardenLog
+
 
 
 
 def watchdog_thread():
+    import time
     wdt = machine.WDT(timeout=8000)
+    
+    pet_count = 0
     while True:
-        print("Petting the dog")
+        pet_count += 1
+        #Every 30 minutes enter a log entry 360 is the normal value
+        # For now, this is actually every 15 seconds
+        if pet_count > 3:
+            glog.message("Now petting the dog")
+            pet_count = 0
+        
         wdt.feed()
         time.sleep(5)
 
 def main_thread():
-    wifi = Wifi()
-    api = Api_handler_gardenbrain()
-    webserver = BotwebServer(api)    
+    try:
+        #wifi = Wifi()
+        api = Api_handler_gardenbrain(glog)
+        webserver = BotwebServer(glog, api)
+    except Exception as e:
+        print("Exception thrown resetting")
+        print(e.message)
+        machine.reset()
+
 
 if __name__ == "__main__":
+    
+    glog = GardenLog()
+    glog.message("Now initializing")
+    
+    wifi = Wifi(glog)
     second_thread = _thread.start_new_thread(watchdog_thread, ())
+ 
     main_thread()
-    #thread_two()

@@ -6,31 +6,34 @@ import dht
 import botbrain_config
 
 import time
+import ntptime
 
 class Api_handler_gardenbrain(Api_handler):
-    def __init__(self):
+
+    def __init__(self, glog):
         self.set_name("botbrain")
-        print ("Now initiating %s" % self.get_name())
-        print(self.get_api_methods())
+        self.glog = glog
+        self.glog.message("Now initiating %s" % self.get_name())
+        self.glog.message(self.get_api_methods())
 
     def action_lpm0(self):
-        print("Going to LPM0")
+        self.glog.message("Going to LPM0")
 
     def action_lpm1(self):
-        print("Going to LPM1")
+        self.glog.message("Going to LPM1")
 
     def action_lpm2(self):
-        print("Going to LPM2")
+        self.glog.message("Going to LPM2")
 
     def action_lpm3(self):
-        print("Going to LPM3")
+        self.glog.message("Going to LPM3")
 
     def action_reboot(self):
-        print("Rebooting")
+        self.glog.message("Rebooting")
         machine.reset()
 
     def action_flashled(self):
-        print("Now flashing led for 5 seconds")
+        self.glog.message("Now flashing led for 5 seconds")
     
     def action_checkdigitalsensor(self, channel = 15):
         sensor = Pin(channel, Pin.IN)
@@ -41,12 +44,12 @@ class Api_handler_gardenbrain(Api_handler):
         if (sensor_value):
             result["value"] = sensor_value
             result["human_readable"] = botbrain_config.PINS[gpio_name]["human_readable"][sensor_value]
-            print(result)
+            self.glog.message(result)
             return result
         else:
             result["value"] = sensor_value
             result["human_readable"] = botbrain_config.PINS[gpio_name]["human_readable"][sensor_value]
-            print(result)
+            self.glog.message(result)
             return result
 
     def action_checkdigitalsensors_all(self):
@@ -57,9 +60,9 @@ class Api_handler_gardenbrain(Api_handler):
         
         for channel in botbrain_config.PINS.keys():
             if botbrain_config.PINS[channel]["type"] == "digital":
-                print(f"Now testing {channel}")
+                self.glog.message(f"Now testing {channel}")
                 result = self.action_checkdigitalsensor(botbrain_config.PINS[channel]["channel"])
-                print (f"{channel} is {botbrain_config.PINS[channel]['name']} at pin {botbrain_config.PINS[channel]['channel']} and {result['human_readable']}")
+                self.glog.message (f"{channel} is {botbrain_config.PINS[channel]['name']} at pin {botbrain_config.PINS[channel]['channel']} and {result['human_readable']}")
                 
                 p_result = {}
                 p_result["channel"] = f"{channel}-{botbrain_config.PINS[channel]['name']}"
@@ -77,29 +80,28 @@ class Api_handler_gardenbrain(Api_handler):
         digital_results = self.action_checkdigitalsensors_all()
         analog_results = self.action_checktemp_humidity()
         results = self.merge_dicts(digital_results, analog_results)
-        print(digital_results)
-        print(analog_results)
-        print("\n")
+        self.glog.message(digital_results)
+        self.glog.message(analog_results)
         
         #We merged the dicts together...
         return analog_results
 
     def action_describesensors(self):
             for channel in botbrain_config.PINS.keys():
-                print (f"{channel} is {botbrain_config.PINS[channel]['name']} at pin {botbrain_config.PINS[channel]['channel']}")
+                self.glog.message (f"{channel} is {botbrain_config.PINS[channel]['name']} at pin {botbrain_config.PINS[channel]['channel']}")
 
 
     def action_checklight(self):
         channel = 11
         water_sense = Pin(channel, Pin.IN)
-        print(water_sense.value())
+        self.glog.message(water_sense.value())
         if (water_sense.value()):
             result = "No light is detected"
-            print(result)
+            self.glog.message(result)
             return result
         else:
             result = "Light is detected"
-            print(result)
+            self.glog.message(result)
             return result
 
     def action_checktemp_humidity(self):
@@ -130,7 +132,7 @@ class Api_handler_gardenbrain(Api_handler):
             prtg_results["prtg"]["result"].append(p_result)
             
         except Exception as e:
-            print(e)
+            self.glog.message(e)
             result = "Issue Detected"
             
             prtg_results = {}
@@ -142,6 +144,14 @@ class Api_handler_gardenbrain(Api_handler):
         
         return prtg_results
         
+    def action_simulated_crash(self):
+        raise Exception("Simulated crash")
+
+    def action_pull_logs(self):
+       return self.glog.display()
+
+    def action_get_time(self):
+        print(time.localtime())
 
     def dynamic_call(self, action):
         if hasattr(self, action) and callable(func := getattr(self,action)):
