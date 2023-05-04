@@ -4,6 +4,7 @@ import botbrain_config
 import time
 import ntptime
 from led_smokesignal import LEDSmokeSignal
+import gc
 
 class Wifi:
 
@@ -73,7 +74,24 @@ class Wifi:
             led_smokesignal.off()
             time.sleep(5)
         
-        ntptime.settime()
+        self.glog.message("Now attempting to set ntp time")
+        ntp_timeset_count = 0
+        while True:
+            try:
+                ntptime.timeout=5
+                ntptime.settime()
+            except Exception as e:
+                ntp_timeset_count += 1
+                self.glog.message(f"Issue setting NTP...attempt #{ntp_timeset_count} {e}")
+                self.glog.message(f"Memory: {gc.mem_alloc()} of {gc.mem_free()} bytes used.")
+                self.glog.message(f"CPU Freq: {machine.freq()/1000000}Mhz")
+
+                self.glog.message(self.ap.ifconfig())
+                if ntp_timeset_count > 5:
+                    self.glog.message("NTP Issue - Continuing...")
+                    continue
+                time.sleep(5)
+        
         self.glog.message(f"Boot Time {time.localtime()[0]}-{time.localtime()[1]}-{time.localtime()[2]}-{time.localtime()[3]}-{time.localtime()[4]}-{time.localtime()[5]}")
         self.glog.message(self.ap.ifconfig())
 
