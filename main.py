@@ -42,6 +42,6 @@ if __name__ == "__main__":
     glog.message("Now initializing")
     
     wifi = Wifi(glog)
-    second_thread = _thread.start_new_thread(watchdog_thread, ())
+    #second_thread = _thread.start_new_thread(watchdog_thread, ())
  
     main_thread()

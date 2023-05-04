@@ -2,6 +2,7 @@ import network
 import machine
 import botbrain_config
 import time
+import ntptime
 from led_smokesignal import LEDSmokeSignal
 
 class Wifi:
@@ -71,7 +72,9 @@ class Wifi:
                     
             led_smokesignal.off()
             time.sleep(5)
-            
+        
+        ntptime.settime()
+        self.glog.message(f"Boot Time {time.localtime()[0]}-{time.localtime()[1]}-{time.localtime()[2]}-{time.localtime()[3]}-{time.localtime()[4]}-{time.localtime()[5]}")
         self.glog.message(self.ap.ifconfig())
 
 

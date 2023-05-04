@@ -8,8 +8,10 @@ class GardenLog:
     
     def __init__(self):
         self.logcount = 0
-        
-        filesize = os.stat("debug.log")
+        try:
+            filesize = os.stat("debug.log")
+        except:
+            filesize = [0,0,0,0,0,0,0]
         
         if filesize[6] < 1000000:     
             self.log = open("debug.log", "a")
@@ -27,7 +29,7 @@ class GardenLog:
         
         r = random.randint(1,65535)
         self.log.write(f"{self.logcount} - {message} [{r}]\n")
-        
+        self.log.flush()
         print(message)
         self.logcount += 1
     
