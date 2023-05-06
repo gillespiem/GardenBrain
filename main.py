@@ -47,22 +47,16 @@ def bootstats(glog):
     glog.message(f"Free storage: {s[0]*s[3]/1024} KB")
     glog.message(f"CPU Freq: {machine.freq()/1000000}Mhz")
 
+
 if __name__ == "__main__":
-    
-    #print("Waiting to change CPU freq")
-    #time.sleep(10)
-    #machine.freq(botbrain_config.CPU_SPEED)
-    
     glog = GardenLog()
     glog.message("Now initializing")
-    
-  
+      
     api = Api_handler_gardenbrain(glog)
-
     bootstats(glog)
-    
     wifi = Wifi(glog)
-    second_thread = _thread.start_new_thread(mqtt_thread, ())
+    mqtt_thread()
+    #second_thread = _thread.start_new_thread(mqtt_thread, ())
  
-    main_thread()
+    #main_thread()
     
