@@ -17,7 +17,7 @@ class Api_handler_gardenbrain(Api_handler):
         self.glog.message(self.get_api_methods())
 
     def action_lpm0(self):
-        self.glog.message("Going to LPM0")
+        self.glog.syslog_message("Going to LPM0")
         self.glog.message(f"LMP0 Time {time.localtime()[0]}-{time.localtime()[1]}-{time.localtime()[2]}-{time.localtime()[3]}-{time.localtime()[4]}-{time.localtime()[5]}")
         time.sleep(1)
         sensor = Pin(19, Pin.OUT)
@@ -33,7 +33,7 @@ class Api_handler_gardenbrain(Api_handler):
         self.glog.message("Going to LPM3")
 
     def action_reboot(self):
-        self.glog.message("Rebooting")
+        self.glog.syslog_message("Rebooting")
         machine.reset()
 
     def action_flashled(self):
