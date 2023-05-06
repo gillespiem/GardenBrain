@@ -3,6 +3,8 @@ import random
 import os
 import time
 import ntptime
+import botbrain_config
+import socket
 
 class GardenLog:
     
@@ -28,8 +30,9 @@ class GardenLog:
         #self.log.write(f"{self.logcount} - {message} [{r[0]}-{r[1]}-{r[2]}-{r[3]}-{r[4]}]\n")
         
         r = random.randint(1,65535)
-        self.log.write(f"{self.logcount} - {message} [{r}]\n")
-        self.log.flush()
+        if botbrain_config.LOG_TO_DISK:
+            self.log.write(f"{self.logcount} - {message} [{r}]\n")
+            self.log.flush()
         print(message)
         self.logcount += 1
     
@@ -46,3 +49,11 @@ class GardenLog:
         debuglog.close()
             
         return last_lines
+    
+    def syslog_message(self, message):
+        MESSAGE = b'<165>%s' % message
+        sock =  socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        addr = socket.getaddrinfo(botbrain_config.SYSLOG_HOST, botbrain_config.SYSLOG_PORT) [0][-1]
+        sock.settimeout(1.0)
+        sock.connect(addr)
+        sock.send(MESSAGE)
