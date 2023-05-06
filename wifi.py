@@ -25,6 +25,10 @@ class Wifi:
             self.glog.message("Setting up system as STA")
             self.ap = network.WLAN(network.STA_IF)
             self.ap.active(True)
+            print("Checking for IP")
+            print(self.get_ifconfig())
+            if botbrain_config.WIFI_DISABLE_LPM:
+                self.ap.config(pm = 0xa11140)
             self.ap.connect(botbrain_config.WIFI_SSID, botbrain_config.WIFI_PASSWORD)
 
         while self.ap.active() == False:
@@ -73,28 +77,38 @@ class Wifi:
                     
             led_smokesignal.off()
             time.sleep(5)
-        
-        self.glog.message("Now attempting to set ntp time")
-        ntp_timeset_count = 0
-        while True:
-            try:
-                ntptime.timeout=5
-                ntptime.settime()
-            except Exception as e:
-                ntp_timeset_count += 1
-                self.glog.message(f"Issue setting NTP...attempt #{ntp_timeset_count} {e}")
-                self.glog.message(f"Memory: {gc.mem_alloc()} of {gc.mem_free()} bytes used.")
-                self.glog.message(f"CPU Freq: {machine.freq()/1000000}Mhz")
+       
+        if botbrain_config.NTP_ENABLED and (botbrain_config.NTP_PRECONFIG_BYPASS and time.localtime()[0] < 2023):
 
-                self.glog.message(self.ap.ifconfig())
-                if ntp_timeset_count > 5:
-                    self.glog.message("NTP Issue - Continuing...")
-                    continue
-                time.sleep(5)
-        
+            self.glog.message(f"Now attempting to set ntp time. Current year is {time.localtime()[0]}. First waiting for 10 seconds...")
+            time.sleep(10)
+            ntp_timeset_count = 0
+            while True:
+                try:
+                    self.glog.message("NTP Set attempt...")
+                    ntptime.timeout=botbrain_config.NTP_TIMEOUT
+                    ntptime.host = botbrain_config.NTP_SERVER
+                    ntptime.settime()
+                    break
+                except Exception as e:
+                    ntp_timeset_count += 1
+                    self.glog.message(f"Issue setting NTP...attempt #{ntp_timeset_count} {e}")
+                    self.glog.message(f"Memory: {gc.mem_alloc()} of {gc.mem_free()} bytes used.")
+                    self.glog.message(f"CPU Freq: {machine.freq()/1000000}Mhz")
+
+                    self.glog.message(self.ap.ifconfig())
+                    if ntp_timeset_count > botbrain_config.NTP_MAX_ATTEMPTS:
+                        self.glog.message("NTP Issue - Skipping...")
+                        break
+                    time.sleep(5)
+        else:
+            self.glog.message("Bypassing NTP")
+
         self.glog.message(f"Boot Time {time.localtime()[0]}-{time.localtime()[1]}-{time.localtime()[2]}-{time.localtime()[3]}-{time.localtime()[4]}-{time.localtime()[5]}")
         self.glog.message(self.ap.ifconfig())
 
+        #while True:
+         #   time.sleep(10)
 
 
     def get_ifconfig(self):
