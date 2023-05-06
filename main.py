@@ -2,13 +2,14 @@ from botweb_server import BotwebServer
 from api_handler_gardenbrain import Api_handler_gardenbrain
 from wifi import Wifi
 from machine import Pin
+import machine
 import time
 import _thread
 from gardenlog import GardenLog
 from mqtt_gardenbrain import Mqtt
 import gc
 import os
-
+import botbrain_config
 
 def watchdog_thread():
     import time
@@ -32,9 +33,9 @@ def mqtt_thread():
 
 def main_thread():
     try:
-        #wifi = Wifi()
-        #api = Api_handler_gardenbrain(glog) #Testing to see if I can share the api across threads like I am with glog.
-        webserver = BotwebServer(glog, api)
+        #wifi = Wifi(glog)
+        #webserver = BotwebServer(glog, api)
+        print("Main thread")
     except Exception as e:
         print("Exception thrown resetting")
         print(e.message)
@@ -48,9 +49,14 @@ def bootstats(glog):
 
 if __name__ == "__main__":
     
+    #print("Waiting to change CPU freq")
+    #time.sleep(10)
+    #machine.freq(botbrain_config.CPU_SPEED)
+    
     glog = GardenLog()
     glog.message("Now initializing")
     
+  
     api = Api_handler_gardenbrain(glog)
 
     bootstats(glog)
