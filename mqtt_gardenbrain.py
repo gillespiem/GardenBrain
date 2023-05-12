@@ -10,9 +10,10 @@ import botbrain_config
 
 class Mqtt:
 
-    def __init__(self, glog, api):
+    def __init__(self, glog, api, bootstats = False):
         self.glog = glog
         self.api = api
+        self.bootstats = bootstats
         wlan = network.WLAN(network.STA_IF)
         
         self.glog.message("MQTT is waiting for network")
@@ -24,6 +25,7 @@ class Mqtt:
         time.sleep(20)
         self.glog.message("Now sending message")
         self.send_message()
+   
 
     def send_message(self):
         client = MQTTClient(botbrain_config.MQTT_CLIENT_ID, botbrain_config.MQTT_BROKER, keepalive=botbrain_config.MQTT_KEEPALIVE)
@@ -36,32 +38,35 @@ class Mqtt:
             time.sleep(10)
             machine.reset()
             return
-
-        current_time = f"{time.localtime()[0]}-{time.localtime()[1]}-{time.localtime()[2]:02d} {time.localtime()[3]:02d}:{time.localtime()[4]:02d}:{time.localtime()[5]:02d}"
+           
+        digital_results = self.api.action_checkdigitalsensors_all()
+     
+        #If we have bootstats, add them to the return and syslog it.
+        if self.bootstats:
+            digital_results["bootstats"] = self.bootstats
+            print(digital_results)
+            self.glog.syslog_message(self.bootstats)
         
-        prtg_results = {}
-        for channel in botbrain_config.PINS.keys():
-            if botbrain_config.PINS[channel]["type"] == "digital":
-                
-                print(f"Now testing {channel}")
-                result = self.api.action_checkdigitalsensor(botbrain_config.PINS[channel]["channel"])
-                
-                print (f"{channel} is {botbrain_config.PINS[channel]['name']} at pin {botbrain_config.PINS[channel]['channel']} and {result['human_readable']}")
-                
-                
-                p_result = {}
-                p_result["channel"] = f"{channel}-{botbrain_config.PINS[channel]['name']}"
-                p_result["value"] = result["value"]
-                p_result["time"] = current_time
-          
-                prtg_results[channel] = p_result
-        print(prtg_results)
-            
+        temp_results = self.api.action_checktemp_humidity()
+
+        
+        prtg_results = digital_results.copy()
+        prtg_results.update(temp_results)
+
+
+        
+        
+        
         j=json.dumps(prtg_results)
         
         client.publish(botbrain_config.MQTT_TOPIC, j, True, botbrain_config.MQTT_QOS)
         client.disconnect()
         
+        #print(self.api.action_checktemp_humidity())
+        
         if botbrain_config.MQTT_SHUTDOWN_AFTER_SEND:
             self.api.action_lpm0()
+            machine.reset()
             
+
+
