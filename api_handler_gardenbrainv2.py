@@ -8,10 +8,12 @@ import botbrain_config
 import time
 import ntptime
 
+#This is version 2 of the API handler. It's goal is to abstract the data. We will add a layer to convert from this to PRTG format in the future
 class Api_handler_gardenbrain(Api_handler):
 
     def __init__(self, glog):
         self.set_name("botbrain")
+        self.VERSION=2.0
         self.glog = glog
         self.glog.message("Now initiating %s" % self.get_name())
         self.glog.message(self.get_api_methods())
@@ -66,23 +68,23 @@ class Api_handler_gardenbrain(Api_handler):
 
     def action_checkdigitalsensors_all(self):
         
+        current_time = f"{time.localtime()[0]}-{time.localtime()[1]}-{time.localtime()[2]:02d} {time.localtime()[3]:02d}:{time.localtime()[4]:02d}:{time.localtime()[5]:02d}"
         prtg_results = {}
-        prtg_results["prtg"] = {}
-        prtg_results["prtg"]["result"] = []
-        
         for channel in botbrain_config.PINS.keys():
             if botbrain_config.PINS[channel]["type"] == "digital":
-                self.glog.message(f"Now testing {channel}")
+                
+                print(f"Now testing {channel}")
                 result = self.action_checkdigitalsensor(botbrain_config.PINS[channel]["channel"])
-                self.glog.message (f"{channel} is {botbrain_config.PINS[channel]['name']} at pin {botbrain_config.PINS[channel]['channel']} and {result['human_readable']}")
+                
+                print (f"{channel} is {botbrain_config.PINS[channel]['name']} at pin {botbrain_config.PINS[channel]['channel']} and {result['human_readable']}")
+                
                 
                 p_result = {}
                 p_result["channel"] = f"{channel}-{botbrain_config.PINS[channel]['name']}"
                 p_result["value"] = result["value"]
-                p_result["integer"] = 1
-                prtg_results["prtg"]["result"].append(p_result)
-                               
-        
+                p_result["time"] = current_time
+          
+                prtg_results[channel] = p_result
         return prtg_results
 
     def merge_dicts(self, dict1, dict2):
@@ -119,9 +121,12 @@ class Api_handler_gardenbrain(Api_handler):
     def action_checktemp_humidity(self):
         pin = 12
         
+        current_time = f"{time.localtime()[0]}-{time.localtime()[1]}-{time.localtime()[2]:02d} {time.localtime()[3]:02d}:{time.localtime()[4]:02d}:{time.localtime()[5]:02d}"
+        
         prtg_results = {}
-        prtg_results["prtg"] = {}
-        prtg_results["prtg"]["result"] = []
+        prtg_results["GPIO12-Temp"] = {}
+        prtg_results["GPIO12-Humidity"] = {}
+        #prtg_results["prtg"]["result"] = []
         
         try: 
             sensor = dht.DHT22(Pin(pin)) 
@@ -135,22 +140,29 @@ class Api_handler_gardenbrain(Api_handler):
             p_result["channel"] = f"GPIO12-{botbrain_config.PINS['GPIO12']['name']}-Temp"
             p_result["value"] = temp
             p_result["float"] = 1
-            prtg_results["prtg"]["result"].append(p_result)
+            p_result["time"] = current_time
+            prtg_results["GPIO12-Temp"]= p_result
             
             p_result = {}
             p_result["channel"] = f"GPIO12-{botbrain_config.PINS['GPIO12']['name']}-Humidity"
             p_result["value"] = hum
             p_result["float"] = 1
-            prtg_results["prtg"]["result"].append(p_result)
+            prtg_results["GPIO12-Humidity"]= p_result
             
         except Exception as e:
             self.glog.message(e)
             result = "Issue Detected"
             
-            prtg_results = {}
-            prtg_results["prtg"] = {}
-            prtg_results["prtg"]["error"] = 1
-            prtg_results["prtg"]["text"] = "Issue detected."
+            #prtg_results = {}
+            #prtg_results["prtg"] = {}
+            #prtg_results["prtg"]["error"] = 1
+            #prtg_results["prtg"]["text"] = "Issue detected."
+            p_result = {}
+            p_result["value"] = -1
+            p_result["text"] = "Issue Detected"
+            
+            prtg_results["GPIO12-Temp"] = p_result
+            prtg_results["GPIO12-Humidity"] = p_result
             return prtg_results
             
         
