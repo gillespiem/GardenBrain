@@ -16,12 +16,20 @@ class Api_handler_gardenbrain(Api_handler):
         self.glog.message("Now initiating %s" % self.get_name())
         self.glog.message(self.get_api_methods())
 
-    def action_lpm0(self):
-        self.glog.syslog_message("Going to LPM0")
-        self.glog.message(f"LMP0 Time {time.localtime()[0]}-{time.localtime()[1]}-{time.localtime()[2]}-{time.localtime()[3]}-{time.localtime()[4]}-{time.localtime()[5]}")
-        time.sleep(1)
-        sensor = Pin(19, Pin.OUT)
-        sensor.value(1)
+        #Set the LPM0 pin to off.
+        self.action_lpm0(False)
+
+    def action_lpm0(self, lpm0_on = True):
+        if not lpm0_on:
+            self.glog.message("DISABLING LPM0")
+            sensor = Pin(19, Pin.OUT)
+            sensor.value(0)
+        else:    
+            self.glog.syslog_message("Going to LPM0")
+            self.glog.message(f"LMP0 Time {time.localtime()[0]}-{time.localtime()[1]}-{time.localtime()[2]}-{time.localtime()[3]}-{time.localtime()[4]}-{time.localtime()[5]}")
+            time.sleep(1)
+            sensor = Pin(19, Pin.OUT)
+            sensor.value(1)  
 
     def action_lpm1(self):
         self.glog.message("Going to LPM1")
