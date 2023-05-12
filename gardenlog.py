@@ -51,9 +51,12 @@ class GardenLog:
         return last_lines
     
     def syslog_message(self, message):
-        MESSAGE = b'<165>%s' % message
-        sock =  socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        addr = socket.getaddrinfo(botbrain_config.SYSLOG_HOST, botbrain_config.SYSLOG_PORT) [0][-1]
-        sock.settimeout(1.0)
-        sock.connect(addr)
-        sock.send(MESSAGE)
+        try:
+            MESSAGE = b'<165>%s' % message
+            sock =  socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            addr = socket.getaddrinfo(botbrain_config.SYSLOG_HOST, botbrain_config.SYSLOG_PORT) [0][-1]
+            sock.settimeout(1.0)
+            sock.connect(addr)
+            sock.send(MESSAGE)
+        except:
+            print(f"Unable to send: {message}")
