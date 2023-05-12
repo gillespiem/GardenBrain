@@ -1,5 +1,5 @@
 from botweb_server import BotwebServer
-from api_handler_gardenbrain import Api_handler_gardenbrain
+from api_handler_gardenbrainv2 import Api_handler_gardenbrain
 from wifi import Wifi
 from machine import Pin
 import machine
@@ -10,6 +10,7 @@ from mqtt_gardenbrain import Mqtt
 import gc
 import os
 import botbrain_config
+import sys
 
 def watchdog_thread():
     import time
@@ -27,8 +28,8 @@ def watchdog_thread():
         wdt.feed()
         time.sleep(5)
 
-def mqtt_thread():
-    mqtt = Mqtt(glog, api)
+def mqtt_thread(bootstats):
+    mqtt = Mqtt(glog, api, bootstats)
 
 
 def main_thread():
@@ -41,21 +42,46 @@ def main_thread():
         print(e.message)
         machine.reset()
 
-def bootstats(glog):
+def bootstats():
     s = os.statvfs('/')
-    glog.message(f"Memory: {gc.mem_alloc()} of {gc.mem_free()} bytes used.")
-    glog.message(f"Free storage: {s[0]*s[3]/1024} KB")
-    glog.message(f"CPU Freq: {machine.freq()/1000000}Mhz")
+    bootstat = {}
+    bootstat["mem_alloc"] = f"{gc.mem_alloc()} bytes"
+    bootstat["mem_free"] = f"{gc.mem_free()} bytes"
+    bootstat["storage_free"] = f"{s[0]*s[3]/1024} KB"
+    bootstat["cpu_freq"] = f"{machine.freq()/1000000}Mhz"
+    #bootstat["sys_implementation"] = sys.implementation
+    bootstat["sys_version"] = sys.version
+    
+    wl_cs = machine.Pin(25) # WiFi chip SDIO_DATA3 / gate on FET between VSYS divider (FET drain) and GPIO29 (FET source)
+    wl_cs.init(mode=machine.Pin.OUT, value=1)
+    pin = machine.ADC(29)
+    adc_reading  = pin.read_u16()
+    adc_voltage  = (adc_reading * 3.3) / 65535
+    vsys_voltage = adc_voltage * 3
+    
+    bootstat["adc_reading"] = adc_reading
+    bootstat["adc_voltage"] = adc_voltage
+    bootstat["vsys_voltage"] = vsys_voltage
+
+    wl_cs.init(mode=machine.Pin.ALT, pull=machine.Pin.PULL_DOWN)#, alt=31)#try to restore initial WL_CS state
+    return bootstat
+    
+    #glog.message(f"Memory: {gc.mem_alloc()} of {gc.mem_free()} bytes used.")
+    #glog.message(f"Free storage: {s[0]*s[3]/1024} KB")
+    #glog.message(f"CPU Freq: {machine.freq()/1000000}Mhz")
 
 
 if __name__ == "__main__":
+
     glog = GardenLog()
     glog.message("Now initializing")
-      
+
+    bootstats = bootstats()
+
+
     api = Api_handler_gardenbrain(glog)
-    bootstats(glog)
     wifi = Wifi(glog)
-    mqtt_thread()
+    mqtt_thread(bootstats)
     #second_thread = _thread.start_new_thread(mqtt_thread, ())
  
     #main_thread()
