@@ -2,6 +2,8 @@ from api_handler import Api_handler
 import json
 from machine import Pin
 import machine
+import onewire
+import ds18x20
 import dht
 import botbrain_config
 
@@ -90,10 +92,44 @@ class Api_handler_gardenbrain(Api_handler):
     def merge_dicts(self, dict1, dict2):
         return (dict2.update(dict1))
 
+    def action_get_external_temp(self):
+        print("NOW IN EXT TEMP FUNC")
+        prtg_results = {}
+        current_time = f"{time.localtime()[0]}-{time.localtime()[1]}-{time.localtime()[2]:02d} {time.localtime()[3]:02d}:{time.localtime()[4]:02d}:{time.localtime()[5]:02d}"
+        ds_pin = machine.Pin(22) 
+        ds_sensor = ds18x20.DS18X20(onewire.OneWire(ds_pin))
+        roms = ds_sensor.scan()
+        
+        if roms:
+            self.glog.message('Found DS devices: %s' % roms)
+            print("FOund DS Devices: ", roms)
+            ds_sensor.convert_temp()
+            time.sleep_ms(750)
+            for rom in roms: 
+                print(rom)
+                c = ds_sensor.read_temp(rom)
+                f = (c * 9/5) + 32
+        else:
+            self.glog.message("No ROMs found")
+            f = -1
+        
+        p_result = {}
+        p_result["channel"] = f"GPIO22-ExternalTemp"
+        p_result["value"] = f
+        p_result["time"] = current_time
+        prtg_results["GPIO22"] = p_result
+        print(prtg_results)
+        return prtg_results
+         
+
     def action_checksensors_all(self):
         digital_results = self.action_checkdigitalsensors_all()
         analog_results = self.action_checktemp_humidity()
-        results = self.merge_dicts(digital_results, analog_results)
+        external_temp_results = self.action_get_external_temp()
+        
+        first_results = self.merge_dicts(digital_results, analog_results)
+        results = self.merge_dists(external_temp_results, first_results)
+        
         self.glog.message(digital_results)
         self.glog.message(analog_results)
         
@@ -124,8 +160,8 @@ class Api_handler_gardenbrain(Api_handler):
         current_time = f"{time.localtime()[0]}-{time.localtime()[1]}-{time.localtime()[2]:02d} {time.localtime()[3]:02d}:{time.localtime()[4]:02d}:{time.localtime()[5]:02d}"
         
         prtg_results = {}
-        prtg_results["GPIO12-Temp"] = {}
-        prtg_results["GPIO12-Humidity"] = {}
+        prtg_results["GPIO12Temp"] = {}
+        prtg_results["GPIO12Humidity"] = {}
         #prtg_results["prtg"]["result"] = []
         
         try: 
@@ -141,13 +177,13 @@ class Api_handler_gardenbrain(Api_handler):
             p_result["value"] = temp
             p_result["float"] = 1
             p_result["time"] = current_time
-            prtg_results["GPIO12-Temp"]= p_result
+            prtg_results["GPIO12Temp"]= p_result
             
             p_result = {}
             p_result["channel"] = f"GPIO12-{botbrain_config.PINS['GPIO12']['name']}-Humidity"
             p_result["value"] = hum
             p_result["float"] = 1
-            prtg_results["GPIO12-Humidity"]= p_result
+            prtg_results["GPIO12Humidity"]= p_result
             
         except Exception as e:
             self.glog.message(e)
@@ -161,8 +197,8 @@ class Api_handler_gardenbrain(Api_handler):
             p_result["value"] = -1
             p_result["text"] = "Issue Detected"
             
-            prtg_results["GPIO12-Temp"] = p_result
-            prtg_results["GPIO12-Humidity"] = p_result
+            prtg_results["GPIO12Temp"] = p_result
+            prtg_results["GPIO12Humidity"] = p_result
             return prtg_results
             
         
