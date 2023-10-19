@@ -53,9 +53,11 @@ class Mqtt:
         prtg_results = digital_results.copy()
         prtg_results.update(temp_results)
 
-        temp_results = self.api.action_get_external_temp()
+        temp_results = self.api.action_get_external_temp(22)
         prtg_results.update(temp_results)
        
+        temp_results = self.api.action_get_external_temp(6)
+        prtg_results.update(temp_results)
         
         
         j=json.dumps(prtg_results)

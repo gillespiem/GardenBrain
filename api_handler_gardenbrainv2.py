@@ -92,17 +92,17 @@ class Api_handler_gardenbrain(Api_handler):
     def merge_dicts(self, dict1, dict2):
         return (dict2.update(dict1))
 
-    def action_get_external_temp(self):
+    def action_get_external_temp(self, channel):
         print("NOW IN EXT TEMP FUNC")
         prtg_results = {}
         current_time = f"{time.localtime()[0]}-{time.localtime()[1]}-{time.localtime()[2]:02d} {time.localtime()[3]:02d}:{time.localtime()[4]:02d}:{time.localtime()[5]:02d}"
-        ds_pin = machine.Pin(22) 
+        ds_pin = machine.Pin(channel) 
         ds_sensor = ds18x20.DS18X20(onewire.OneWire(ds_pin))
         roms = ds_sensor.scan()
         
         if roms:
             self.glog.message('Found DS devices: %s' % roms)
-            print("FOund DS Devices: ", roms)
+            print("Found DS Devices: ", roms)
             ds_sensor.convert_temp()
             time.sleep_ms(750)
             for rom in roms: 
@@ -114,10 +114,11 @@ class Api_handler_gardenbrain(Api_handler):
             f = -1
         
         p_result = {}
-        p_result["channel"] = f"GPIO22-ExternalTemp"
+        #p_result["channel"] = f"GPIO{channel:02}-{botbrain_config.PINS['GPIO{channel:02}']['human_readable']}"
+        p_result["channel"] = "%s-%s" % (f"GPIO{channel:02}", botbrain_config.PINS[f'GPIO{channel:02}']['human_readable'])
         p_result["value"] = f
         p_result["time"] = current_time
-        prtg_results["GPIO22"] = p_result
+        prtg_results[f"GPIO{channel:02}"] = p_result
         print(prtg_results)
         return prtg_results
          
@@ -125,10 +126,12 @@ class Api_handler_gardenbrain(Api_handler):
     def action_checksensors_all(self):
         digital_results = self.action_checkdigitalsensors_all()
         analog_results = self.action_checktemp_humidity()
-        external_temp_results = self.action_get_external_temp()
+        external_temp_results = self.action_get_external_temp(22)
+        soil_temp_results = self.action_get_external_temp(6)
         
         first_results = self.merge_dicts(digital_results, analog_results)
-        results = self.merge_dists(external_temp_results, first_results)
+        second_results = self.merge_dicts(external_temp_results, first_results)
+        results = self.merge_dicts(soil_temp_results, second_results)
         
         self.glog.message(digital_results)
         self.glog.message(analog_results)
