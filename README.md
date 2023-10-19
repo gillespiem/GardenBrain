@@ -23,3 +23,11 @@ The system works as follows:
 * After the 9 minute timer the system starts again from the beginning.
 
 ![The GardenBrain](./images/20231012_142758.jpg)
+
+
+| Image |
+| :---:   |
+| [Image of GardenBrain](./images/20231012_142758.jpg)|
+| [GardenBrain blinking](./images/20231018_184133_1.mp4)  |
+| [The internals of the brain box](./images/20231017_141417.jpg)|
+| [The GPIOs](./gpios-led.png)|
